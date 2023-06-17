@@ -1,19 +1,24 @@
 use crate::letter::Letter;
 use colored::Colorize;
+use std::borrow::Cow;
+use serde_derive::{
+    Serialize,
+    Deserialize
+};
 
 pub const BOARD_SIZE: usize = 21;
 pub const ARRAY_SIZE: usize = BOARD_SIZE * BOARD_SIZE;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Board {
-    inner: [Option<Letter>; ARRAY_SIZE],
+    inner: Vec<Option<Letter>>, // ARRAY_SIZE
     moves: Vec<Move>
 }
 
 impl Board {
     pub fn new() -> Board {
         Board {
-            inner: [None; ARRAY_SIZE],
+            inner: vec![None; ARRAY_SIZE],
             moves: Vec::new()
         }
     }
@@ -35,11 +40,11 @@ impl Board {
             };
         }
 
-        self.moves.push(Move {
-            location: convert_to_index(row, column),
+        self.moves.push(Move::new(
+            convert_to_index(row, column),
+            direction,
             word,
-            direction
-        });
+        ));
     }
 
     pub fn get(&self, row: u8, column: u8) -> Option<Letter> {
@@ -51,7 +56,7 @@ impl Board {
     }
 
     pub fn get_index(&self, index: usize) -> Option<Letter> {
-        self.inner[index]
+        self.inner.get(index).and_then(|x| *x)
     }
 
     pub fn set_index(&mut self, index: usize, letter: Option<Letter>) {
@@ -97,11 +102,11 @@ pub fn convert_from_index(index: usize) -> (u8, u8) {
     ((index % BOARD_SIZE) as u8, (index / BOARD_SIZE) as u8)
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Move {
     pub location: usize,
     pub direction: Direction,
-    pub word: &'static str
+    pub word: Cow<'static, str>
 }
 
 impl Move {
@@ -109,12 +114,12 @@ impl Move {
         Move {
             location,
             direction,
-            word
+            word: Cow::Borrowed(word)
         }
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Direction {
     Right,
     Down

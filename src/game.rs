@@ -34,11 +34,40 @@ fn menu(name: &str, options: &[&str]) -> Res<u32> {
 }
 
 pub fn play(board: &mut Board) -> Res<()> {
-    match menu("Turn", &["Your turn", "Other person's turn"])? {
+    match menu("Turn", &["Your turn", "Other person's turn", "Print Board", "Load Board", "Save Board"])? {
         1 => calculate_best_move(board),
         2 => update_board_from_input(board),
+        3 => {
+            board.print();
+            Ok(())
+        }
+        4 => {
+            *board = load_board()?;
+            Ok(())
+        },
+        5 => save_board(board),
         _ => unreachable!()
     }
+}
+
+fn load_board() -> Res<Board> {
+    let name = input("Board name >")?;
+    return Ok(bincode::deserialize(&std::fs::read(name.trim())?)?)
+}
+
+fn save_board(board: &mut Board) -> Res<()> {
+    let mut i=1;
+    loop {
+        let name = "board".to_string() + &i.to_string() + ".bin";
+        if std::path::Path::new(&name).exists() {
+            i += 1;
+        } else {
+            std::fs::write(&name, bincode::serialize(board)?)?;
+            println!("Saved to {}", &name);
+            break;
+        }
+    }
+    return Ok(())
 }
 
 fn calculate_best_move(board: &mut Board) -> Res<()> {

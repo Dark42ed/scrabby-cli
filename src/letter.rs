@@ -1,3 +1,4 @@
+use serde_derive::*;
 
 lazy_static::lazy_static!{
     pub static ref WORD_MULT: &'static [u8] = Box::leak("
@@ -49,7 +50,7 @@ lazy_static::lazy_static!{
     ".as_bytes().iter().filter(|&&x| x != b'\n' && x != b'\r' && x != b' ').map(|&c| if c == b'.' {1} else {c as u8 - b'0'}).collect::<Vec<u8>>().into_boxed_slice());
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[allow(unused)]
 pub enum Letter {
     A = 1,
@@ -77,22 +78,29 @@ pub enum Letter {
     W,
     X,
     Y,
-    Z
+    Z,
+    Blank
 }
 
 impl Letter {
     pub fn from_char(c: char) -> Letter {
-        unsafe {
-            assert!(('A'..='Z').contains(&c));
-            let letter = c as u8 - b'A';
-            core::mem::transmute(letter + 1)
+        match c {
+            ' ' => Self::Blank,
+            _ => unsafe {
+                assert!(('A'..='Z').contains(&c));
+                let letter = c as u8 - b'A';
+                core::mem::transmute(letter + 1)
+            }
         }
     }
 
     pub fn to_char(self) -> char {
-        unsafe {
-            let letter: u8 = core::mem::transmute(self);
-            (letter + b'A' - 1) as char
+        match self {
+            Self::Blank => ' ',
+            _ => unsafe {
+                let letter: u8 = core::mem::transmute(self);
+                (letter + b'A' - 1) as char
+            }
         }
     }
 
@@ -124,6 +132,7 @@ impl Letter {
             Letter::X => 8,
             Letter::Y => 4,
             Letter::Z => 10,
+            Letter::Blank => 0
         }
     }
 }

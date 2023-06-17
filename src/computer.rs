@@ -14,11 +14,12 @@ pub fn run(board: &mut Board, letters: &[u8]) -> Res<()> {
     let mut best: Vec<(usize, Move)> = Vec::new();
     for (location, letter) in board.enumerate_letters() {
         rack.push(letter.to_char() as u8);
+
         let words = get_createable_words(&rack);
 
         for word in words {
             let move_verification = verify_move(board, location, word);
-            best.extend(move_verification.iter().map(|&x| (get_word_score(x.word, x.location, x.direction), x)));
+            best.extend(move_verification.iter().map(|x| (get_word_score(x.word.as_ref(), x.location, x.direction), (*x).clone())));
         }
 
         rack.pop();
@@ -62,6 +63,7 @@ pub fn get_createable_words(rack: &[u8]) -> impl Iterator<Item = &&'static str> 
 
 pub fn can_create_word(rack: &[u8], word: &str) -> bool {
     let mut rack = Vec::from(rack);
+    let mut blank_count = rack.iter().filter(|&&x| x == b' ').count();
 
     'outer: for ch in word.as_bytes() {
         for (i, letter) in rack.iter().enumerate() {
@@ -69,6 +71,10 @@ pub fn can_create_word(rack: &[u8], word: &str) -> bool {
                 rack[i] = b' ';
                 continue 'outer;
             }
+        }
+        if blank_count > 0 {
+            blank_count -= 1;
+            continue 'outer;
         }
         return false;
     }

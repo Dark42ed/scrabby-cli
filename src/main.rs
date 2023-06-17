@@ -15,6 +15,7 @@ fn main() -> anyhow::Result<()> {
     let mut board = board::Board::new();
 
     loop {
+        println!();
         game::play(&mut board).unwrap();
     }
 }
