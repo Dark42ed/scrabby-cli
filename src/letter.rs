@@ -23,7 +23,7 @@ lazy_static::lazy_static!{
         ..2......2.2......2..
         .2......2...2......2.
         4......3.....3......4
-    ".as_bytes().iter().filter(|&&x| x != b'\n' && x != b'\r' && x != b' ').map(|&c| if c == b'.' {1} else {c as u8 - b'0'}).collect::<Vec<u8>>().into_boxed_slice());
+    ".as_bytes().iter().filter(|&&x| x != b'\n' && x != b'\r' && x != b' ').map(|&c| if c == b'.' {1} else {c - b'0'}).collect::<Vec<u8>>().into_boxed_slice());
 
     pub static ref LETTER_MULT: &'static [u8] = Box::leak("
         ...2......2......2...
@@ -47,7 +47,7 @@ lazy_static::lazy_static!{
         .....4.........4.....
         ....3...........3....
         ...2......2......2...
-    ".as_bytes().iter().filter(|&&x| x != b'\n' && x != b'\r' && x != b' ').map(|&c| if c == b'.' {1} else {c as u8 - b'0'}).collect::<Vec<u8>>().into_boxed_slice());
+    ".as_bytes().iter().filter(|&&x| x != b'\n' && x != b'\r' && x != b' ').map(|&c| if c == b'.' {1} else {c - b'0'}).collect::<Vec<u8>>().into_boxed_slice());
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -87,7 +87,7 @@ impl Letter {
         match c {
             ' ' => Self::Blank,
             _ => unsafe {
-                assert!(('A'..='Z').contains(&c));
+                assert!(c.is_ascii_uppercase());
                 let letter = c as u8 - b'A';
                 core::mem::transmute(letter + 1)
             }

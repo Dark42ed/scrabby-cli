@@ -52,7 +52,7 @@ pub fn play(board: &mut Board) -> Res<()> {
 
 fn load_board() -> Res<Board> {
     let name = input("Board name >")?;
-    return Ok(bincode::deserialize(&std::fs::read(name.trim())?)?)
+    Ok(bincode::deserialize(&std::fs::read(name.trim())?)?)
 }
 
 fn save_board(board: &mut Board) -> Res<()> {
@@ -67,7 +67,7 @@ fn save_board(board: &mut Board) -> Res<()> {
             break;
         }
     }
-    return Ok(())
+    Ok(())
 }
 
 fn calculate_best_move(board: &mut Board) -> Res<()> {
@@ -80,7 +80,7 @@ fn calculate_best_move(board: &mut Board) -> Res<()> {
 
 fn update_board_from_input(board: &mut Board) -> Res<()> {
     let word = input("Enter the word >")?.trim().to_uppercase();
-    let location: Vec<i32> = input("Enter the location X,Y >")?.trim().split(",").filter_map(|x| x.parse().ok()).collect();
+    let location: Vec<i32> = input("Enter the location X,Y >")?.trim().split(',').filter_map(|x| x.parse().ok()).collect();
     let direction = match menu("Enter the direction >", &["Right", "Down"])? {
         1 => Direction::Right,
         2 => Direction::Down,

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use crate::letter::Letter;
 use colored::Colorize;
 use std::borrow::Cow;
@@ -82,12 +83,10 @@ impl Board {
             }
             if let Some(x) = highlight.iter().find(|f| f.1 == i) {
                 print!("{} ", x.0.to_char().to_string().red())
+            } else if let Some(letter) = l {
+                print!("{} ", letter.to_char());
             } else {
-                if let Some(letter) = l {
-                    print!("{} ", letter.to_char());
-                } else {
-                    print!(". ",);
-                }
+                print!(". ",);
             }
         }
         println!();
