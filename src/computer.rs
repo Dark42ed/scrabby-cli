@@ -107,46 +107,44 @@ pub fn verify_move(board: &Board, location: usize, word: &'static str) -> Vec<Mo
 
     for direction in [Direction::Down, Direction::Right] {
         'outer: for letter in word.as_bytes().iter().enumerate().filter(|x| Letter::from_char(*x.1 as char) == board.get_index(location).unwrap()) {
-            // Letter is the starting point (where we're building off of)
             let string_position = letter.0;
-            let board_position = location;
-    
-            for (i, word_letter) in word[0..string_position].as_bytes().iter().enumerate() {
-                let test_position = match direction {
-                    Direction::Down => board_position.checked_sub(board::BOARD_SIZE * (string_position - i)),
-                    Direction::Right => board_position.checked_sub(i)
-                };
-                if test_position.is_none() {
-                    // The to-be-checked is off the board
-                    continue 'outer;
-                }
-                let test_position = test_position.unwrap();
-                let test = board.get_index(test_position);
-                if test != Some(Letter::from_char(*word_letter as char)) && test.is_some() {
-                    continue 'outer;
-                }
-            }
-
-            for (i, word_letter) in word[string_position..].as_bytes().iter().enumerate() {
-                let test_position = match direction {
-                    Direction::Down => board_position + board::BOARD_SIZE * (i + 1),
-                    Direction::Right => board_position + i
-                };
-                if test_position > board::ARRAY_SIZE {
-                    continue 'outer;
-                }
-                let test = board.get_index(test_position);
-                if test != Some(Letter::from_char(*word_letter as char)) && test.is_some() {
-                    continue 'outer;
-                }
-            }
-
-            let actual_location = match direction {
+            let starting_position = match direction {
                 Direction::Down => location - (string_position * board::BOARD_SIZE),
                 Direction::Right => location - string_position
             };
+            let (starting_column, starting_row) = crate::board::convert_from_index(starting_position);
 
-            good_ones.push(Move::new(actual_location, direction, word));
+            for (i, word_letter) in word.as_bytes().iter().enumerate() {
+                let test_position = match direction {
+                    Direction::Down => starting_position.wrapping_add(i * board::BOARD_SIZE),
+                    Direction::Right => starting_position.wrapping_add(i)
+                };
+
+                let (current_column, current_row) = crate::board::convert_from_index(test_position);
+                if match direction {
+                    Direction::Down => current_column != starting_column,
+                    Direction::Right => current_row != starting_row
+                } {
+                    continue 'outer;
+                }
+
+                if test_position >= board::ARRAY_SIZE {
+                    continue 'outer;
+                }
+                
+                let test = board.get_index(test_position);
+                if let Some(test_inner) = test {
+                    if test_inner != Letter::from_char(*word_letter as char) {
+                        continue 'outer;
+                    }
+                }
+            }
+
+            good_ones.push(Move::new(
+                starting_position,
+                direction,
+                word
+            ));
         }
     }
 

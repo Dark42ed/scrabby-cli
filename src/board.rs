@@ -57,7 +57,7 @@ impl Board {
     }
 
     pub fn get_index(&self, index: usize) -> Option<Letter> {
-        self.inner.get(index).and_then(|x| *x)
+        self.inner[index]
     }
 
     pub fn set_index(&mut self, index: usize, letter: Option<Letter>) {
