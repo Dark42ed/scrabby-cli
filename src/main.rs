@@ -1,10 +1,10 @@
-mod board;
-mod letter;
+use scrabby::board;
+
 mod game;
-mod computer;
 
 type Res<T> = Result<T, Box<dyn std::error::Error>>;
 
+pub const BOARD_SIZE: usize = 21;
 
 lazy_static::lazy_static! {
     static ref WORDS: String = std::fs::read_to_string("words.txt").unwrap();
@@ -12,7 +12,7 @@ lazy_static::lazy_static! {
 }
 
 fn main() -> Res<()> {
-    let mut board = board::Board::new();
+    let mut board = board::Board::new(BOARD_SIZE);
 
     loop {
         println!();
