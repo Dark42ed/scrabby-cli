@@ -1,4 +1,4 @@
-use scrabby::{Board, Direction, Letter};
+use scrabby::{board::Position, Board, Direction, Letter};
 
 use crate::Res;
 use std::io::{stdin, stdout, Write};
@@ -88,16 +88,13 @@ fn calculate_best_move(board: &mut Board) -> Res<()> {
     for b in best {
         buf.clear();
         println!(
-            "Word: {}\tScore: {}\tLocation: {:?}",
+            "Word: {}\tScore: {}\tLocation: {}",
             b.word,
             b.get_score(board),
-            b.location
+            b.position
         );
         let letters_to_print = b.word.as_bytes().iter().enumerate().map(|(i, c)| {
-            let letter_location = match b.direction {
-                Direction::Down => b.location + (i * board.size()),
-                Direction::Right => b.location + i,
-            };
+            let letter_location = b.position.add_direction(b.direction, i as isize);
 
             (Letter::from_char(*c as _), letter_location)
         });
@@ -133,10 +130,18 @@ fn update_board_from_input(board: &mut Board) -> Res<()> {
 
     let static_word = crate::WORD_LIST.iter().find(|&&x| x == &word);
     if let Some(w) = static_word {
-        board.make_move(location.1 as _, location.0 as _, w, direction);
+        board.make_move(
+            Position::new(board.size(), location.1 as _, location.0 as _),
+            w,
+            direction,
+        );
     } else {
         let s = Box::leak(word.into_boxed_str());
-        board.make_move(location.1 as _, location.0 as _, s, direction);
+        board.make_move(
+            Position::new(board.size(), location.1 as _, location.0 as _),
+            s,
+            direction,
+        );
     }
 
     board.print();

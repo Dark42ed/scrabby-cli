@@ -40,12 +40,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "const-str"
-version = "0.5.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3618cccc083bb987a415d85c02ca6c9994ea5b44731ec28b9ecf09658655fba9"
-
-[[package]]
 name = "hermit-abi"
 version = "0.1.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -85,20 +79,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustversion"
-version = "1.0.17"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "955d28af4278de8121b7ebeb796b6a45735dc01436d898801014aced2773a3d6"
-
-[[package]]
 name = "scrabby"
 version = "0.1.0"
-source = "git+https://github.com/Dark42ed/scrabby.git#43d89c617417f322fcbf1a54d217ee5a1b57d61b"
 dependencies = [
  "colored",
- "const-str",
  "lazy_static",
- "rustversion",
  "serde",
  "serde_derive",
 ]
