@@ -90,7 +90,7 @@ fn calculate_best_move(board: &mut Board) -> Res<()> {
         println!(
             "Word: {}\tScore: {}\tLocation: {}",
             b.word,
-            b.get_score(board),
+            b.get_score(board, None),
             b.position
         );
         let letters_to_print = b.word.as_bytes().iter().enumerate().map(|(i, c)| {
