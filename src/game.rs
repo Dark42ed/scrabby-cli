@@ -1,4 +1,4 @@
-use scrabby::{board::Position, Board, Direction, Letter};
+use scrabby::{board::Position, letter::RackLetter, Board, Direction, Letter};
 
 use crate::Res;
 use std::io::{stdin, stdout, Write};
@@ -32,8 +32,8 @@ pub fn play(board: &mut Board) -> Res<()> {
     match menu(
         "Turn",
         &[
-            "Your turn",
-            "Other person's turn",
+            "Generate Word",
+            "Place Word",
             "Print Board",
             "Load Board",
             "Save Board",
@@ -79,7 +79,13 @@ fn calculate_best_move(board: &mut Board) -> Res<()> {
         .trim_end_matches(|x| x == '\n' || x == '\r')
         .to_uppercase()
         .chars()
-        .map(|ch| Letter::from_char(ch))
+        .map(|ch| {
+            if ch == ' ' {
+                RackLetter::Blank
+            } else {
+                RackLetter::Letter(Letter::from_char(ch))
+            }
+        })
         .collect::<Vec<_>>();
 
     let best = scrabby::computer::best_moves(board, &letters, &crate::WORD_LIST);

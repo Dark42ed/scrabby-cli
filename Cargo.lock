@@ -81,6 +81,7 @@ dependencies = [
 [[package]]
 name = "scrabby"
 version = "0.1.0"
+source = "git+https://github.com/Dark42ed/scrabby.git#1b840a0d4ef539cae08e352d2fc5d427374cf86f"
 dependencies = [
  "colored",
  "lazy_static",
